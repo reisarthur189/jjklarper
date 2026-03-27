@@ -1,0 +1,33 @@
+backend:
+  name: github
+  repo: reisarthur189/jjklarper
+  branch: main
+
+media_folder: "images"
+public_folder: "/images"
+
+collections:
+  - name: "posts"
+    label: "Gallery Posts"
+    folder: "_posts"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Author", name: "author", widget: "string", hint: "Twitter @ handle" }
+      - { label: "Caption", name: "caption", widget: "text", hint: "The tweet text or joke" }
+      - label: "Character"
+        name: "character"
+        widget: "select"
+        multiple: true
+        options:
+          - { label: "Blue Judas", value: "blue-judas" }
+          - { label: "Red Judas", value: "red-judas" }
+          - { label: "Bubble Pop Electric", value: "bubble-pop" }
+          - { label: "Jane Juliet", value: "jane-juliet" }
+          - { label: "Oh My God Guy", value: "omg-guy" }
+          - { label: "Kenny", value: "kenny" }
+          - { label: "Other", value: "other" }
+      - { label: "Image", name: "image", widget: "image", required: false, hint: "Upload the edit/meme image" }
+      - { label: "Is GIF", name: "is_gif", widget: "boolean", default: false, required: false }
+      - { label: "Date", name: "date", widget: "datetime" }
