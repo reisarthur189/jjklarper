@@ -26,6 +26,8 @@ collections:
           - { label: "Jane Juliet", value: "jane-juliet" }
           - { label: "Oh My God Guy", value: "omg-guy" }
           - { label: "Kenny", value: "kenny" }
+          - { label: "Bum", value: "bum" }
+          - { label: "Potential Man", value: "potential-man" }
           - { label: "Other", value: "other" }
       - { label: "Image", name: "image", widget: "image", required: false, hint: "Upload the edit/meme image" }
       - { label: "Is GIF", name: "is_gif", widget: "boolean", default: false, required: false }
