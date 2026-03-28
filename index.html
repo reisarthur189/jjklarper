@@ -1,312 +1,533 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JJK LARPER — The LARP Games Gallery</title>
-<meta name="description" content="The community gallery for the best JJK LARP games edits, mashups, and memes. #jjklarpgames">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎭</text></svg>">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
-<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-<style>
-:root{--bg:#0a0a0a;--bg2:#111;--card:#161616;--card2:#1c1c1c;--t1:#f0f0f0;--t2:#999;--t3:#555;--acc:#e63946;--accg:rgba(230,57,70,.25);--acc2:#ff6b6b;--brd:#1e1e1e;--brd2:#2a2a2a}
-*{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;overflow-x:hidden}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JJK LARPER — The LARP Games Gallery</title>
+    <meta name="description" content="The community gallery for the best JJK LARP games edits, mashups, and memes. #jjklarpgames">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎭</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    <!-- Firebase SDK for shared likes -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+    <style>
+        :root{--bg:#0a0a0a;--bg2:#111;--card:#161616;--card2:#1c1c1c;--t1:#f0f0f0;--t2:#999;--t3:#555;--acc:#e63946;--accg:rgba(230,57,70,.25);--acc2:#ff6b6b;--brd:#1e1e1e;--brd2:#2a2a2a}
+        *{margin:0;padding:0;box-sizing:border-box}
+        html{scroll-behavior:smooth}
+        body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;overflow-x:hidden}
+        .hdr{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(10,10,10,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--brd);padding:0 2rem;height:60px;display:flex;align-items:center;justify-content:space-between}
+        .logo{font-family:'Bebas Neue',sans-serif;font-size:1.7rem;letter-spacing:3px;color:var(--t1);text-decoration:none}
+        .la{color:var(--acc)}
+        .nav{display:flex;gap:1.5rem;align-items:center}
+        .nav a{color:var(--t2);text-decoration:none;font-size:.8rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;transition:color .3s}
+        .nav a:hover{color:var(--t1)}
+        .sbtn{background:var(--acc);color:#fff;border:none;padding:.45rem 1.1rem;font-family:'Bebas Neue',sans-serif;font-size:.95rem;letter-spacing:2px;cursor:pointer;transition:all .3s;text-decoration:none}
+        .sbtn:hover{background:var(--acc2);box-shadow:0 0 20px var(--accg)}
+        .hero{padding:130px 2rem 60px;text-align:center;position:relative;overflow:hidden}
+        .hero::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle at 50% 80%,var(--accg) 0%,transparent 50%);opacity:.12;animation:pulse 8s ease-in-out infinite alternate}
+        @keyframes pulse{0%{opacity:.08;transform:scale(1)}to{opacity:.15;transform:scale(1.1)}}
+        .ht{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.5rem,9vw,7rem);letter-spacing:6px;line-height:.9;position:relative;margin-bottom:1.2rem}
+        .ht .l1{display:block;color:var(--t3);font-size:.35em;letter-spacing:10px}
+        .ht .l2{display:block;background:linear-gradient(135deg,var(--t1),var(--acc));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .hs{color:var(--t2);font-size:1rem;font-weight:300;max-width:480px;margin:0 auto 2rem;line-height:1.6}
+        .htag{display:inline-block;border:1px solid var(--acc);color:var(--acc);padding:.35rem 1rem;font-family:'Bebas Neue',sans-serif;font-size:.85rem;letter-spacing:3px;animation:bp 3s ease-in-out infinite}
+        @keyframes bp{0%,to{box-shadow:0 0 0 0 var(--accg)}50%{box-shadow:0 0 12px 2px var(--accg)}}
+        .fs{padding:1.5rem 2rem;max-width:1400px;margin:0 auto}
+        .fl{font-family:'Bebas Neue',sans-serif;font-size:.8rem;letter-spacing:3px;color:var(--t3);margin-bottom:.6rem}
+        .fts{display:flex;flex-wrap:wrap;gap:.4rem}
+        .ft{background:transparent;border:1px solid var(--brd2);color:var(--t3);padding:.35rem .85rem;font-size:.75rem;font-weight:600;cursor:pointer;transition:all .3s;letter-spacing:.5px}
+        .ft:hover,.ft.active{border-color:var(--acc);color:var(--acc);background:rgba(230,57,70,.06)}
+        .gs{padding:1.5rem 2rem;max-width:1400px;margin:0 auto}
+        .gg{columns:3;column-gap:1rem}
+        .gi{break-inside:avoid;background:var(--card);border:1px solid var(--brd);margin-bottom:1rem;overflow:hidden;cursor:pointer;transition:all .3s ease}
+        .gi:hover{border-color:var(--brd2);box-shadow:0 8px 30px rgba(0,0,0,.3)}
+        .giw{overflow:hidden;position:relative}
+        .giw img{width:100%;height:auto;display:block;transition:transform .5s ease}
+        .gi:hover .giw img{transform:scale(1.02)}
+        .gif-badge{position:absolute;top:.4rem;left:.4rem;background:var(--acc);color:#fff;font-family:'Bebas Neue',sans-serif;font-size:.65rem;letter-spacing:1.5px;padding:.1rem .45rem}
+        .gib{padding:.75rem .85rem}
+        .gicap{color:var(--t2);font-size:.8rem;line-height:1.45;margin-bottom:.6rem}
+        .gimeta{display:flex;justify-content:space-between;align-items:center}
+        .gia{color:var(--t3);font-size:.7rem;font-weight:600}
+        .gict{display:flex;gap:.25rem;flex-wrap:wrap}
+        .gic{background:rgba(230,57,70,.08);border:1px solid rgba(230,57,70,.15);color:var(--acc);padding:.1rem .4rem;font-size:.6rem;font-weight:600;letter-spacing:.3px}
 
-.hdr{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(10,10,10,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--brd);padding:0 2rem;height:60px;display:flex;align-items:center;justify-content:space-between}
-.logo{font-family:'Bebas Neue',sans-serif;font-size:1.7rem;letter-spacing:3px;color:var(--t1);text-decoration:none}
-.la{color:var(--acc)}
-.nav{display:flex;gap:1.5rem;align-items:center}
-.nav a{color:var(--t2);text-decoration:none;font-size:.8rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;transition:color .3s}
-.nav a:hover{color:var(--t1)}
-.sbtn{background:var(--acc);color:#fff;border:none;padding:.45rem 1.1rem;font-family:'Bebas Neue',sans-serif;font-size:.95rem;letter-spacing:2px;cursor:pointer;transition:all .3s;text-decoration:none}
-.sbtn:hover{background:var(--acc2);box-shadow:0 0 20px var(--accg)}
+        /* Like button styles */
+        .like-row{display:flex;align-items:center;gap:.4rem;margin-top:.5rem}
+        .like-btn{background:none;border:1px solid var(--brd2);color:var(--t3);display:flex;align-items:center;gap:.3rem;padding:.25rem .6rem;font-family:'Outfit',sans-serif;font-size:.7rem;font-weight:600;cursor:pointer;transition:all .3s;border-radius:2px}
+        .like-btn:hover{border-color:var(--acc);color:var(--acc)}
+        .like-btn.liked{border-color:var(--acc);color:var(--acc);background:rgba(230,57,70,.08)}
+        .like-btn svg{width:14px;height:14px;transition:transform .2s}
+        .like-btn.liked svg{transform:scale(1.15)}
+        .like-count{font-family:'Bebas Neue',sans-serif;font-size:.8rem;letter-spacing:1px;color:var(--t3)}
+        .like-btn.pop svg{animation:likePop .35s ease}
+        @keyframes likePop{0%{transform:scale(1)}50%{transform:scale(1.4)}to{transform:scale(1.15)}}
 
-.hero{padding:130px 2rem 60px;text-align:center;position:relative;overflow:hidden}
-.hero::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle at 50% 80%,var(--accg) 0%,transparent 50%);opacity:.12;animation:pulse 8s ease-in-out infinite alternate}
-@keyframes pulse{0%{opacity:.08;transform:scale(1)}to{opacity:.15;transform:scale(1.1)}}
-.ht{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.5rem,9vw,7rem);letter-spacing:6px;line-height:.9;position:relative;margin-bottom:1.2rem}
-.ht .l1{display:block;color:var(--t3);font-size:.35em;letter-spacing:10px}
-.ht .l2{display:block;background:linear-gradient(135deg,var(--t1),var(--acc));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.hs{color:var(--t2);font-size:1rem;font-weight:300;max-width:480px;margin:0 auto 2rem;line-height:1.6}
-.htag{display:inline-block;border:1px solid var(--acc);color:var(--acc);padding:.35rem 1rem;font-family:'Bebas Neue',sans-serif;font-size:.85rem;letter-spacing:3px;animation:bp 3s ease-in-out infinite}
-@keyframes bp{0%,to{box-shadow:0 0 0 0 var(--accg)}50%{box-shadow:0 0 12px 2px var(--accg)}}
+        /* Lightbox like button */
+        .lb-like-row{display:flex;align-items:center;gap:.5rem;margin-top:.6rem}
+        .lb-like-btn{background:none;border:1px solid var(--brd2);color:var(--t2);display:flex;align-items:center;gap:.35rem;padding:.35rem .8rem;font-family:'Outfit',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .3s;border-radius:2px}
+        .lb-like-btn:hover{border-color:var(--acc);color:var(--acc)}
+        .lb-like-btn.liked{border-color:var(--acc);color:var(--acc);background:rgba(230,57,70,.08)}
+        .lb-like-btn svg{width:16px;height:16px;transition:transform .2s}
+        .lb-like-btn.liked svg{transform:scale(1.15)}
+        .lb-like-count{font-family:'Bebas Neue',sans-serif;font-size:.95rem;letter-spacing:1px;color:var(--t2)}
 
-.fs{padding:1.5rem 2rem;max-width:1400px;margin:0 auto}
-.fl{font-family:'Bebas Neue',sans-serif;font-size:.8rem;letter-spacing:3px;color:var(--t3);margin-bottom:.6rem}
-.fts{display:flex;flex-wrap:wrap;gap:.4rem}
-.ft{background:transparent;border:1px solid var(--brd2);color:var(--t3);padding:.35rem .85rem;font-size:.75rem;font-weight:600;cursor:pointer;transition:all .3s;letter-spacing:.5px}
-.ft:hover,.ft.active{border-color:var(--acc);color:var(--acc);background:rgba(230,57,70,.06)}
-
-.gs{padding:1.5rem 2rem;max-width:1400px;margin:0 auto}
-.gg{columns:3;column-gap:1rem}
-.gi{break-inside:avoid;background:var(--card);border:1px solid var(--brd);margin-bottom:1rem;overflow:hidden;cursor:pointer;transition:all .3s ease}
-.gi:hover{border-color:var(--brd2);box-shadow:0 8px 30px rgba(0,0,0,.3)}
-.giw{overflow:hidden;position:relative}
-.giw img{width:100%;height:auto;display:block;transition:transform .5s ease}
-.gi:hover .giw img{transform:scale(1.02)}
-.gif-badge{position:absolute;top:.4rem;left:.4rem;background:var(--acc);color:#fff;font-family:'Bebas Neue',sans-serif;font-size:.65rem;letter-spacing:1.5px;padding:.1rem .45rem}
-.gib{padding:.75rem .85rem}
-.gicap{color:var(--t2);font-size:.8rem;line-height:1.45;margin-bottom:.6rem}
-.gimeta{display:flex;justify-content:space-between;align-items:center}
-.gia{color:var(--t3);font-size:.7rem;font-weight:600}
-.gict{display:flex;gap:.25rem;flex-wrap:wrap}
-.gic{background:rgba(230,57,70,.08);border:1px solid rgba(230,57,70,.15);color:var(--acc);padding:.1rem .4rem;font-size:.6rem;font-weight:600;letter-spacing:.3px}
-
-.lb{position:fixed;inset:0;background:rgba(0,0,0,.88);backdrop-filter:blur(25px);z-index:200;display:none;align-items:center;justify-content:center;padding:1.5rem}
-.lb.active{display:flex}
-.lbc{max-width:750px;max-height:90vh;position:relative;width:100%}
-.lbc img{max-width:100%;max-height:78vh;object-fit:contain;display:block;margin:0 auto;border:1px solid var(--brd)}
-.lbx{position:absolute;top:-35px;right:0;background:none;border:none;color:var(--t2);font-size:1.2rem;cursor:pointer;font-family:'Bebas Neue',sans-serif;letter-spacing:2px;transition:color .3s}
-.lbx:hover{color:var(--acc)}
-.lbi{padding:.8rem 0}
-.lbt{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:2px}
-.lbd{color:var(--t2);font-size:.85rem;margin-top:.4rem;line-height:1.5}
-.lba{color:var(--t3);font-size:.75rem;margin-top:.3rem}
-
-.mo{position:fixed;inset:0;background:rgba(0,0,0,.88);backdrop-filter:blur(20px);z-index:300;display:none;align-items:center;justify-content:center;padding:1.5rem}
-.mo.active{display:flex}
-.md{background:var(--bg2);border:1px solid var(--brd);max-width:500px;width:100%;padding:2rem;position:relative;max-height:90vh;overflow-y:auto}
-.mx{position:absolute;top:.8rem;right:1.2rem;background:none;border:none;color:var(--t3);font-size:1.3rem;cursor:pointer;transition:color .3s}
-.mx:hover{color:var(--acc)}
-.md h2{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:3px;margin-bottom:.4rem}
-.md>p{color:var(--t2);font-size:.82rem;margin-bottom:1.8rem;line-height:1.5}
-.fg{margin-bottom:1.3rem}
-.fg label{display:block;font-size:.7rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--t2);margin-bottom:.4rem}
-.fg input,.fg textarea,.fg select{width:100%;background:var(--bg);border:1px solid var(--brd);color:var(--t1);padding:.7rem .9rem;font-family:'Outfit',sans-serif;font-size:.85rem;transition:border-color .3s;outline:none}
-.fg input:focus,.fg textarea:focus,.fg select:focus{border-color:var(--acc)}
-.fg textarea{resize:vertical;min-height:70px}
-.fg select option{background:var(--bg);color:var(--t1)}
-.fh{color:var(--t3);font-size:.65rem;margin-top:.25rem}
-.sfb{width:100%;background:var(--acc);color:#fff;border:none;padding:.8rem;font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:3px;cursor:pointer;transition:all .3s}
-.sfb:hover{background:var(--acc2);box-shadow:0 0 25px var(--accg)}
-.sm{display:none;text-align:center;padding:1.5rem 0}
-.sm.show{display:block}
-.sm h3{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:2px;color:var(--acc);margin-bottom:.4rem}
-.sm p{color:var(--t2);font-size:.85rem}
-
-.ftr{border-top:1px solid var(--brd);padding:2.5rem 2rem;text-align:center;margin-top:3rem}
-.ftrl{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:3px;color:var(--t3);margin-bottom:.4rem}
-.ftrs{display:flex;justify-content:center;gap:1.5rem;margin-bottom:.8rem}
-.ftrs a{color:var(--t3);text-decoration:none;font-size:.75rem;transition:color .3s}
-.ftrs a:hover{color:var(--acc)}
-.ftrc{color:var(--t3);font-size:.65rem;letter-spacing:1px}
-
-.fin{opacity:0;transform:translateY(15px);animation:fi .6s ease forwards}
-@keyframes fi{to{opacity:1;transform:translateY(0)}}
-
-@media(max-width:900px){.gg{columns:2}}
-@media(max-width:768px){.hdr{padding:0 1rem}.nav{gap:.8rem}.nav a{font-size:.65rem}.hero{padding:110px 1.5rem 50px}.fs{padding:1rem}.gs{padding:1rem}.md{padding:1.5rem}}
-@media(max-width:480px){.nav a:not(.sbtn){display:none}.gg{columns:1;max-width:400px;margin:0 auto}}
-</style>
+        .lb{position:fixed;inset:0;background:rgba(0,0,0,.88);backdrop-filter:blur(25px);z-index:200;display:none;align-items:center;justify-content:center;padding:1.5rem}
+        .lb.active{display:flex}
+        .lbc{max-width:750px;max-height:90vh;position:relative;width:100%}
+        .lbc img{max-width:100%;max-height:78vh;object-fit:contain;display:block;margin:0 auto;border:1px solid var(--brd)}
+        .lbx{position:absolute;top:-35px;right:0;background:none;border:none;color:var(--t2);font-size:1.2rem;cursor:pointer;font-family:'Bebas Neue',sans-serif;letter-spacing:2px;transition:color .3s}
+        .lbx:hover{color:var(--acc)}
+        .lbi{padding:.8rem 0}
+        .lbt{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:2px}
+        .lbd{color:var(--t2);font-size:.85rem;margin-top:.4rem;line-height:1.5}
+        .lba{color:var(--t3);font-size:.75rem;margin-top:.3rem}
+        .mo{position:fixed;inset:0;background:rgba(0,0,0,.88);backdrop-filter:blur(20px);z-index:300;display:none;align-items:center;justify-content:center;padding:1.5rem}
+        .mo.active{display:flex}
+        .md{background:var(--bg2);border:1px solid var(--brd);max-width:500px;width:100%;padding:2rem;position:relative;max-height:90vh;overflow-y:auto}
+        .mx{position:absolute;top:.8rem;right:1.2rem;background:none;border:none;color:var(--t3);font-size:1.3rem;cursor:pointer;transition:color .3s}
+        .mx:hover{color:var(--acc)}
+        .md h2{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:3px;margin-bottom:.4rem}
+        .md>p{color:var(--t2);font-size:.82rem;margin-bottom:1.8rem;line-height:1.5}
+        .fg{margin-bottom:1.3rem}
+        .fg label{display:block;font-size:.7rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--t2);margin-bottom:.4rem}
+        .fg input,.fg textarea,.fg select{width:100%;background:var(--bg);border:1px solid var(--brd);color:var(--t1);padding:.7rem .9rem;font-family:'Outfit',sans-serif;font-size:.85rem;transition:border-color .3s;outline:none}
+        .fg input:focus,.fg textarea:focus,.fg select:focus{border-color:var(--acc)}
+        .fg textarea{resize:vertical;min-height:70px}
+        .fg select option{background:var(--bg);color:var(--t1)}
+        .fh{color:var(--t3);font-size:.65rem;margin-top:.25rem}
+        .sfb{width:100%;background:var(--acc);color:#fff;border:none;padding:.8rem;font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:3px;cursor:pointer;transition:all .3s}
+        .sfb:hover{background:var(--acc2);box-shadow:0 0 25px var(--accg)}
+        .sm{display:none;text-align:center;padding:1.5rem 0}
+        .sm.show{display:block}
+        .sm h3{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:2px;color:var(--acc);margin-bottom:.4rem}
+        .sm p{color:var(--t2);font-size:.85rem}
+        .ftr{border-top:1px solid var(--brd);padding:2.5rem 2rem;text-align:center;margin-top:3rem}
+        .ftrl{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:3px;color:var(--t3);margin-bottom:.4rem}
+        .ftrs{display:flex;justify-content:center;gap:1.5rem;margin-bottom:.8rem}
+        .ftrs a{color:var(--t3);text-decoration:none;font-size:.75rem;transition:color .3s}
+        .ftrs a:hover{color:var(--acc)}
+        .ftrc{color:var(--t3);font-size:.65rem;letter-spacing:1px}
+        .fin{opacity:0;transform:translateY(15px);animation:fi .6s ease forwards}
+        @keyframes fi{to{opacity:1;transform:translateY(0)}}
+        @media(max-width:900px){.gg{columns:2}}
+        @media(max-width:768px){.hdr{padding:0 1rem}.nav{gap:.8rem}.nav a{font-size:.65rem}.hero{padding:110px 1.5rem 50px}.fs{padding:1rem}.gs{padding:1rem}.md{padding:1.5rem}}
+        @media(max-width:480px){.nav a:not(.sbtn){display:none}.gg{columns:1;max-width:400px;margin:0 auto}}
+    </style>
 </head>
 <body>
-<header class="hdr">
-  <a href="#" class="logo">JJK<span class="la">LARPER</span></a>
-  <nav class="nav">
-    <a href="#gallery">Gallery</a>
-    <a href="https://twitter.com/Alilarper" target="_blank">Twitter</a>
-    <a href="#" class="sbtn" onclick="openModal()">SUBMIT</a>
-  </nav>
-</header>
+    <header class="hdr">
+        <a href="#" class="logo">JJK<span class="la">LARPER</span></a>
+        <nav class="nav">
+            <a href="#gallery">Gallery</a>
+            <a href="https://twitter.com/Alilarper" target="_blank">Twitter</a>
+            <a href="#" class="sbtn" onclick="openModal()">SUBMIT</a>
+        </nav>
+    </header>
 
-<section class="hero">
-  <h1 class="ht fin"><span class="l1">Welcome to</span><span class="l2">JJK LARPER</span></h1>
-  <p class="hs fin" style="animation-delay:.12s">The gallery for the best LARP games edits, mashups, and memes. Community-curated, community-built.</p>
-  <span class="htag fin" style="animation-delay:.25s">#JJKLARPGAMES</span>
-</section>
+    <section class="hero">
+        <h1 class="ht fin"><span class="l1">Welcome to</span><span class="l2">JJK LARPER</span></h1>
+        <p class="hs fin" style="animation-delay:.12s">The gallery for the best LARP games edits, mashups, and memes. Community-curated, community-built.</p>
+        <span class="htag fin" style="animation-delay:.25s">#JJKLARPGAMES</span>
+    </section>
 
-<section class="fs" id="gallery">
-  <div class="fl">FILTER BY CHARACTER</div>
-  <div class="fts">
-    <div class="ft active" data-filter="all">All</div>
-    <div class="ft" data-filter="blue-judas">Blue Judas</div>
-    <div class="ft" data-filter="red-judas">Red Judas</div>
-    <div class="ft" data-filter="bubble-pop">Bubble Pop Electric</div>
-    <div class="ft" data-filter="jane-juliet">Jane Juliet</div>
-    <div class="ft" data-filter="omg-guy">Oh My God Guy</div>
-    <div class="ft" data-filter="kenny">Kenny</div>
-    <div class="ft" data-filter="other">Other</div>
-  </div>
-</section>
-
-<section class="gs">
-  <div class="gg" id="galleryGrid"></div>
-</section>
-
-<div class="lb" id="lightbox"><div class="lbc"><button class="lbx" onclick="closeLB()">CLOSE ✕</button><img id="lbImg" src="" alt=""><div class="lbi"><div class="lbt" id="lbT"></div><div class="lbd" id="lbD"></div><div class="lba" id="lbA"></div></div></div></div>
-
-<div class="mo" id="submitModal"><div class="md"><button class="mx" onclick="closeM()">✕</button><h2>SUBMIT YOUR EDIT</h2><p>Got a LARP games edit, mashup, or meme? Submit it below. We'll review and add the best ones to the gallery.</p><div id="fc"><form id="sf" action="https://formspree.io/f/mreynwdj" method="POST"><div class="fg"><label>Your Twitter @</label><input type="text" name="twitter" placeholder="@YourHandle" required></div><div class="fg"><label>Title</label><input type="text" name="title" placeholder="Nah, I'd Larp" required></div><div class="fg"><label>Character</label><select name="character" required><option value="">Select...</option><option>Blue Judas</option><option>Red Judas</option><option>Bubble Pop Electric</option><option>Jane Juliet / Jane Early</option><option>Oh My God Guy</option><option>Kenny</option><option>Other</option></select></div><div class="fg"><label>Image Link</label><input type="url" name="image_url" placeholder="Imgur or Twitter image URL" required><div class="fh">Upload to Imgur or Twitter first, then paste the direct link</div></div><div class="fg"><label>Caption / Context</label><textarea name="description" placeholder="The joke, context, or caption for the edit"></textarea></div><button type="submit" class="sfb">SUBMIT FOR REVIEW</button></form></div><div class="sm" id="sMsg"><h3>SUBMITTED!</h3><p>We'll review and add it if it makes the cut. Follow @Alilarper for updates.</p></div></div></div>
-
-<footer class="ftr"><div class="ftrl">JJK<span style="color:var(--acc)">LARPER</span>.COM</div><div class="ftrs"><a href="https://twitter.com/Alilarper" target="_blank">Twitter</a><a href="https://twitter.com/search?q=%23jjklarpgames" target="_blank">#jjklarpgames</a><a href="#" onclick="openModal();return false">Submit</a></div><div class="ftrc">A community gallery for the LARP games. Not affiliated with Shueisha or MAPPA.</div></footer>
-
-<script>
-// Character label map
-const charLabels = {
-  'blue-judas': 'Blue Judas',
-  'red-judas': 'Red Judas',
-  'bubble-pop': 'Bubble Pop Electric',
-  'jane-juliet': 'Jane Juliet',
-  'omg-guy': 'Oh My God Guy',
-  'kenny': 'Kenny',
-  'other': 'Other'
-};
-
-// Parse frontmatter from markdown
-function parseFrontmatter(text) {
-  const match = text.match(/^---\n([\s\S]*?)\n---/);
-  if (!match) return null;
-  const fm = {};
-  let currentKey = null;
-  let inArray = false;
-  match[1].split('\n').forEach(line => {
-    const arrayItem = line.match(/^\s+-\s+(.+)/);
-    if (arrayItem && inArray && currentKey) {
-      fm[currentKey].push(arrayItem[1].trim().replace(/^["']|["']$/g, ''));
-      return;
-    }
-    inArray = false;
-    const kv = line.match(/^(\w+):\s*(.*)/);
-    if (kv) {
-      const key = kv[1];
-      let val = kv[2].trim().replace(/^["']|["']$/g, '');
-      if (val === '' || val === '[]') {
-        fm[key] = [];
-        currentKey = key;
-        inArray = true;
-      } else if (val === 'true') fm[key] = true;
-      else if (val === 'false') fm[key] = false;
-      else { fm[key] = val; currentKey = key; }
-    }
-  });
-  return fm;
-}
-
-// Load posts
-async function loadPosts() {
-  const postFiles = [
-    '_posts/is-he-stupid.md',
-    '_posts/first-class-singularity.md',
-    '_posts/larper-fully-realized.md',
-    '_posts/guilty-of-reading.md',
-    '_posts/footsteps-electricity.md',
-    '_posts/drown-dabura.md',
-    '_posts/blue-vs-red-judas.md',
-    '_posts/hollow-nothing.md',
-    '_posts/i-will-larp.md',
-    '_posts/jane-juliet-cp.md',
-    '_posts/miwa-kill-kenny.md',
-    '_posts/miwa-cursed-energy.md',
-    '_posts/stand-proud.md'
-  ];
-
-  const posts = [];
-  for (const file of postFiles) {
-    try {
-      const res = await fetch(file);
-      if (!res.ok) continue;
-      const text = await res.text();
-      const fm = parseFrontmatter(text);
-      if (fm) posts.push(fm);
-    } catch(e) { continue; }
-  }
-
-  renderGallery(posts);
-}
-
-function renderGallery(posts) {
-  const grid = document.getElementById('galleryGrid');
-  grid.innerHTML = '';
-
-  posts.forEach((post, i) => {
-    const tags = Array.isArray(post.character) ? post.character : [post.character];
-    const tagStr = tags.join(' ');
-    const tagLabels = tags.map(t => charLabels[t] || t);
-
-    const div = document.createElement('div');
-    div.className = 'gi';
-    div.dataset.tags = tagStr;
-    div.style.animationDelay = (i * 0.05) + 's';
-
-    let imgHtml = '';
-    if (post.image && post.image !== '""' && post.image !== '') {
-      const isGif = post.is_gif === true || post.image.endsWith('.gif');
-      imgHtml = `<div class="giw"><img src="${post.image}" alt="${post.title}">${isGif ? '<span class="gif-badge">GIF</span>' : ''}</div>`;
-    }
-
-    const capHtml = post.caption ? `<div class="gicap">${post.caption}</div>` : '';
-    const tagsHtml = tagLabels.map(t => `<span class="gic">${t}</span>`).join('');
-
-    div.innerHTML = `
-      ${imgHtml}
-      <div class="gib"${!imgHtml ? ' style="padding-top:1rem"' : ''}>
-        ${capHtml}
-        <div class="gimeta">
-          <span class="gia">${post.author}</span>
-          <div class="gict">${tagsHtml}</div>
+    <section class="fs" id="gallery">
+        <div class="fl">FILTER BY CHARACTER</div>
+        <div class="fts">
+            <div class="ft active" data-filter="all">All</div>
+            <div class="ft" data-filter="blue-judas">Blue Judas</div>
+            <div class="ft" data-filter="red-judas">Red Judas</div>
+            <div class="ft" data-filter="bubble-pop">Bubble Pop Electric</div>
+            <div class="ft" data-filter="jane-juliet">Jane Juliet</div>
+            <div class="ft" data-filter="omg-guy">Oh My God Guy</div>
+            <div class="ft" data-filter="kenny">Kenny</div>
+            <div class="ft" data-filter="other">Other</div>
         </div>
-      </div>
-    `;
+    </section>
 
-    div.onclick = () => {
-      if (post.image && post.image !== '""' && post.image !== '') {
-        document.getElementById('lbImg').src = post.image;
-        document.getElementById('lbT').textContent = post.title;
-        document.getElementById('lbD').textContent = post.caption || '';
-        document.getElementById('lbA').textContent = post.author;
-        document.getElementById('lightbox').classList.add('active');
-        document.body.style.overflow = 'hidden';
-      }
+    <section class="gs">
+        <div class="gg" id="galleryGrid"></div>
+    </section>
+
+    <div class="lb" id="lightbox">
+        <div class="lbc">
+            <button class="lbx" onclick="closeLB()">CLOSE ✕</button>
+            <img id="lbImg" src="" alt="">
+            <div class="lbi">
+                <div class="lbt" id="lbT"></div>
+                <div class="lbd" id="lbD"></div>
+                <div class="lba" id="lbA"></div>
+                <div class="lb-like-row">
+                    <button class="lb-like-btn" id="lbLikeBtn" onclick="toggleLightboxLike()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                        <span>LIKE</span>
+                    </button>
+                    <span class="lb-like-count" id="lbLikeCount"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mo" id="submitModal">
+        <div class="md">
+            <button class="mx" onclick="closeM()">✕</button>
+            <h2>SUBMIT YOUR EDIT</h2>
+            <p>Got a LARP games edit, mashup, or meme? Submit it below. We'll review and add the best ones to the gallery.</p>
+            <div id="fc">
+                <form id="sf" action="https://formspree.io/f/mreynwdj" method="POST">
+                    <div class="fg"><label>Your Twitter @</label><input type="text" name="twitter" placeholder="@YourHandle" required></div>
+                    <div class="fg"><label>Title</label><input type="text" name="title" placeholder="Nah, I'd Larp" required></div>
+                    <div class="fg"><label>Character</label><select name="character" required><option value="">Select...</option><option>Blue Judas</option><option>Red Judas</option><option>Bubble Pop Electric</option><option>Jane Juliet / Jane Early</option><option>Oh My God Guy</option><option>Kenny</option><option>Other</option></select></div>
+                    <div class="fg"><label>Image Link</label><input type="url" name="image_url" placeholder="Imgur or Twitter image URL" required><div class="fh">Upload to Imgur or Twitter first, then paste the direct link</div></div>
+                    <div class="fg"><label>Caption / Context</label><textarea name="description" placeholder="The joke, context, or caption for the edit"></textarea></div>
+                    <button type="submit" class="sfb">SUBMIT FOR REVIEW</button>
+                </form>
+            </div>
+            <div class="sm" id="sMsg"><h3>SUBMITTED!</h3><p>We'll review and add it if it makes the cut. Follow @Alilarper for updates.</p></div>
+        </div>
+    </div>
+
+    <footer class="ftr">
+        <div class="ftrl">JJK<span style="color:var(--acc)">LARPER</span>.COM</div>
+        <div class="ftrs">
+            <a href="https://twitter.com/Alilarper" target="_blank">Twitter</a>
+            <a href="https://twitter.com/search?q=%23jjklarpgames" target="_blank">#jjklarpgames</a>
+            <a href="#" onclick="openModal();return false">Submit</a>
+        </div>
+        <div class="ftrc">A community gallery for the LARP games. Not affiliated with Shueisha or MAPPA.</div>
+    </footer>
+
+    <script>
+    // ============================================================
+    // FIREBASE CONFIG — Replace with your Firebase project details
+    // ============================================================
+    const firebaseConfig = {
+        apiKey: "AIzaSyBNyn4ZYUZ3uasDBiLAVquOmUv_25zHTFI",
+        authDomain: "jjklarper-likes.firebaseapp.com",
+        databaseURL: "https://jjklarper-likes-default-rtdb.firebaseio.com",
+        projectId: "jjklarper-likes",
+        storageBucket: "jjklarper-likes.firebasestorage.app",
+        messagingSenderId: "990053077925",
+        appId: "1:990053077925:web:8a303e1ef3f7cdfad30e4c"
     };
 
-    grid.appendChild(div);
-  });
-}
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-// Filters
-document.querySelectorAll('.ft').forEach(t => {
-  t.addEventListener('click', () => {
-    document.querySelectorAll('.ft').forEach(x => x.classList.remove('active'));
-    t.classList.add('active');
-    const f = t.dataset.filter;
-    document.querySelectorAll('.gi').forEach(i => {
-      i.style.display = (f === 'all' || i.dataset.tags.includes(f)) ? '' : 'none';
+    // ============================================================
+    // LIKES SYSTEM
+    // ============================================================
+
+    // Generate a simple anonymous visitor ID (persisted in localStorage)
+    function getVisitorId() {
+        let id = localStorage.getItem('jjk_visitor_id');
+        if (!id) {
+            id = 'v_' + Math.random().toString(36).substr(2, 12) + Date.now().toString(36);
+            localStorage.setItem('jjk_visitor_id', id);
+        }
+        return id;
+    }
+
+    // Create a slug from a post title for use as Firebase key
+    function postSlug(title) {
+        return title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    }
+
+    // Toggle like for a post
+    function toggleLike(slug, btn, countEl) {
+        const vid = getVisitorId();
+        const likeRef = db.ref('likes/' + slug + '/' + vid);
+
+        likeRef.once('value').then(snap => {
+            if (snap.exists()) {
+                // Unlike
+                likeRef.remove();
+                btn.classList.remove('liked');
+                btn.classList.remove('pop');
+            } else {
+                // Like
+                likeRef.set(true);
+                btn.classList.add('liked');
+                btn.classList.add('pop');
+                setTimeout(() => btn.classList.remove('pop'), 400);
+            }
+        });
+    }
+
+    // Listen for like count changes on a post
+    function watchLikes(slug, countEl, btn) {
+        const vid = getVisitorId();
+
+        // Watch total count
+        db.ref('likes/' + slug).on('value', snap => {
+            const data = snap.val();
+            const count = data ? Object.keys(data).length : 0;
+            countEl.textContent = count > 0 ? count + (count === 1 ? ' like' : ' likes') : '';
+
+            // Check if current visitor liked this
+            if (data && data[vid]) {
+                btn.classList.add('liked');
+            } else {
+                btn.classList.remove('liked');
+            }
+        });
+    }
+
+    // Heart SVG icon
+    const heartSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>';
+
+    // ============================================================
+    // CHARACTER LABELS
+    // ============================================================
+    const charLabels = {
+        'blue-judas': 'Blue Judas',
+        'red-judas': 'Red Judas',
+        'bubble-pop': 'Bubble Pop Electric',
+        'jane-juliet': 'Jane Juliet',
+        'omg-guy': 'Oh My God Guy',
+        'kenny': 'Kenny',
+        'other': 'Other'
+    };
+
+    // ============================================================
+    // PARSE FRONTMATTER
+    // ============================================================
+    function parseFrontmatter(text) {
+        const match = text.match(/^---\n([\s\S]*?)\n---/);
+        if (!match) return null;
+        const fm = {};
+        let currentKey = null;
+        let inArray = false;
+        match[1].split('\n').forEach(line => {
+            const arrayItem = line.match(/^\s+-\s+(.+)/);
+            if (arrayItem && inArray && currentKey) {
+                fm[currentKey].push(arrayItem[1].trim().replace(/^["']|["']$/g, ''));
+                return;
+            }
+            inArray = false;
+            const kv = line.match(/^(\w+):\s*(.*)/);
+            if (kv) {
+                const key = kv[1];
+                let val = kv[2].trim().replace(/^["']|["']$/g, '');
+                if (val === '' || val === '[]') {
+                    fm[key] = [];
+                    currentKey = key;
+                    inArray = true;
+                } else if (val === 'true') fm[key] = true;
+                else if (val === 'false') fm[key] = false;
+                else {
+                    fm[key] = val;
+                    currentKey = key;
+                }
+            }
+        });
+        return fm;
+    }
+
+    // ============================================================
+    // LOAD & RENDER POSTS
+    // ============================================================
+    async function loadPosts() {
+        const postFiles = [
+            '_posts/is-he-stupid.md',
+            '_posts/first-class-singularity.md',
+            '_posts/larper-fully-realized.md',
+            '_posts/guilty-of-reading.md',
+            '_posts/footsteps-electricity.md',
+            '_posts/drown-dabura.md',
+            '_posts/blue-vs-red-judas.md',
+            '_posts/hollow-nothing.md',
+            '_posts/i-will-larp.md',
+            '_posts/jane-juliet-cp.md',
+            '_posts/miwa-kill-kenny.md',
+            '_posts/miwa-cursed-energy.md',
+            '_posts/stand-proud.md'
+        ];
+
+        const posts = [];
+        for (const file of postFiles) {
+            try {
+                const res = await fetch(file);
+                if (!res.ok) continue;
+                const text = await res.text();
+                const fm = parseFrontmatter(text);
+                if (fm) posts.push(fm);
+            } catch(e) { continue; }
+        }
+        renderGallery(posts);
+    }
+
+    // Currently open lightbox post slug (for lightbox like button)
+    let currentLBSlug = null;
+
+    function renderGallery(posts) {
+        const grid = document.getElementById('galleryGrid');
+        grid.innerHTML = '';
+
+        posts.forEach((post, i) => {
+            const tags = Array.isArray(post.character) ? post.character : [post.character];
+            const tagStr = tags.join(' ');
+            const tagLabels = tags.map(t => charLabels[t] || t);
+            const slug = postSlug(post.title);
+
+            const div = document.createElement('div');
+            div.className = 'gi';
+            div.dataset.tags = tagStr;
+            div.style.animationDelay = (i * 0.05) + 's';
+
+            let imgHtml = '';
+            if (post.image && post.image !== '""' && post.image !== '') {
+                const isGif = post.is_gif === true || post.image.endsWith('.gif');
+                imgHtml = `<div class="giw"><img src="${post.image}" alt="${post.title}">${isGif ? '<span class="gif-badge">GIF</span>' : ''}</div>`;
+            }
+
+            const capHtml = post.caption ? `<div class="gicap">${post.caption}</div>` : '';
+            const tagsHtml = tagLabels.map(t => `<span class="gic">${t}</span>`).join('');
+
+            div.innerHTML = `
+                ${imgHtml}
+                <div class="gib"${!imgHtml ? ' style="padding-top:1rem"' : ''}>
+                    ${capHtml}
+                    <div class="gimeta">
+                        <span class="gia">${post.author}</span>
+                        <div class="gict">${tagsHtml}</div>
+                    </div>
+                    <div class="like-row">
+                        <button class="like-btn" data-slug="${slug}" onclick="event.stopPropagation();toggleLike('${slug}',this,this.nextElementSibling)">
+                            ${heartSVG}
+                        </button>
+                        <span class="like-count" data-slug="${slug}"></span>
+                    </div>
+                </div>
+            `;
+
+            // Open lightbox on card click
+            div.onclick = () => {
+                if (post.image && post.image !== '""' && post.image !== '') {
+                    document.getElementById('lbImg').src = post.image;
+                    document.getElementById('lbT').textContent = post.title;
+                    document.getElementById('lbD').textContent = post.caption || '';
+                    document.getElementById('lbA').textContent = post.author;
+                    currentLBSlug = slug;
+                    updateLightboxLike(slug);
+                    document.getElementById('lightbox').classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                }
+            };
+
+            grid.appendChild(div);
+
+            // Start watching likes for this post
+            const likeBtn = div.querySelector('.like-btn');
+            const likeCount = div.querySelector('.like-count');
+            watchLikes(slug, likeCount, likeBtn);
+        });
+    }
+
+    // ============================================================
+    // LIGHTBOX LIKE
+    // ============================================================
+    function updateLightboxLike(slug) {
+        const btn = document.getElementById('lbLikeBtn');
+        const countEl = document.getElementById('lbLikeCount');
+        const vid = getVisitorId();
+
+        // Detach any previous listener
+        if (window._lbLikeOff) window._lbLikeOff();
+
+        const ref = db.ref('likes/' + slug);
+        const handler = ref.on('value', snap => {
+            const data = snap.val();
+            const count = data ? Object.keys(data).length : 0;
+            countEl.textContent = count > 0 ? count + (count === 1 ? ' like' : ' likes') : '';
+            if (data && data[vid]) {
+                btn.classList.add('liked');
+            } else {
+                btn.classList.remove('liked');
+            }
+        });
+        window._lbLikeOff = () => ref.off('value', handler);
+    }
+
+    function toggleLightboxLike() {
+        if (!currentLBSlug) return;
+        const btn = document.getElementById('lbLikeBtn');
+        const countEl = document.getElementById('lbLikeCount');
+        toggleLike(currentLBSlug, btn, countEl);
+    }
+
+    // ============================================================
+    // FILTERS
+    // ============================================================
+    document.querySelectorAll('.ft').forEach(t => {
+        t.addEventListener('click', () => {
+            document.querySelectorAll('.ft').forEach(x => x.classList.remove('active'));
+            t.classList.add('active');
+            const f = t.dataset.filter;
+            document.querySelectorAll('.gi').forEach(i => {
+                i.style.display = (f === 'all' || i.dataset.tags.includes(f)) ? '' : 'none';
+            });
+        });
     });
-  });
-});
 
-// Lightbox
-function closeLB() { document.getElementById('lightbox').classList.remove('active'); document.body.style.overflow = ''; }
-document.getElementById('lightbox').addEventListener('click', e => { if (e.target === document.getElementById('lightbox')) closeLB(); });
+    // ============================================================
+    // LIGHTBOX
+    // ============================================================
+    function closeLB() {
+        document.getElementById('lightbox').classList.remove('active');
+        document.body.style.overflow = '';
+        currentLBSlug = null;
+        if (window._lbLikeOff) window._lbLikeOff();
+    }
+    document.getElementById('lightbox').addEventListener('click', e => {
+        if (e.target === document.getElementById('lightbox')) closeLB();
+    });
 
-// Submit modal
-function openModal() { document.getElementById('submitModal').classList.add('active'); document.body.style.overflow = 'hidden'; }
-function closeM() { document.getElementById('submitModal').classList.remove('active'); document.body.style.overflow = ''; }
-document.getElementById('submitModal').addEventListener('click', e => { if (e.target === document.getElementById('submitModal')) closeM(); });
+    // ============================================================
+    // SUBMIT MODAL
+    // ============================================================
+    function openModal() {
+        document.getElementById('submitModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeM() {
+        document.getElementById('submitModal').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+    document.getElementById('submitModal').addEventListener('click', e => {
+        if (e.target === document.getElementById('submitModal')) closeM();
+    });
+    document.getElementById('sf').addEventListener('submit', async e => {
+        e.preventDefault();
+        const f = e.target;
+        try {
+            await fetch(f.action, { method: 'POST', body: new FormData(f), headers: { 'Accept': 'application/json' } });
+            document.getElementById('fc').style.display = 'none';
+            document.getElementById('sMsg').classList.add('show');
+            setTimeout(() => {
+                document.getElementById('fc').style.display = '';
+                document.getElementById('sMsg').classList.remove('show');
+                f.reset();
+                closeM();
+            }, 3000);
+        } catch(err) {
+            alert('Something went wrong. DM @Alilarper directly.');
+        }
+    });
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') { closeLB(); closeM(); }
+    });
 
-document.getElementById('sf').addEventListener('submit', async e => {
-  e.preventDefault();
-  const f = e.target;
-  try {
-    await fetch(f.action, { method: 'POST', body: new FormData(f), headers: { 'Accept': 'application/json' } });
-    document.getElementById('fc').style.display = 'none';
-    document.getElementById('sMsg').classList.add('show');
-    setTimeout(() => { document.getElementById('fc').style.display = ''; document.getElementById('sMsg').classList.remove('show'); f.reset(); closeM(); }, 3000);
-  } catch(err) { alert('Something went wrong. DM @Alilarper directly.'); }
-});
+    // Netlify Identity redirect
+    if (window.netlifyIdentity) {
+        window.netlifyIdentity.on("init", user => {
+            if (!user) window.netlifyIdentity.on("login", () => { document.location.href = "/admin/"; });
+        });
+    }
 
-document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeLB(); closeM(); } });
-
-// Netlify Identity redirect after login
-if (window.netlifyIdentity) {
-  window.netlifyIdentity.on("init", user => {
-    if (!user) window.netlifyIdentity.on("login", () => { document.location.href = "/admin/"; });
-  });
-}
-
-// Load posts on page load
-loadPosts();
-</script>
+    // Load posts on page load
+    loadPosts();
+    </script>
 </body>
 </html>
